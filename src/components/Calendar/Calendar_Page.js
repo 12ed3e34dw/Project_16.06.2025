@@ -5,7 +5,7 @@ import {View, Text, TouchableOpacity, StyleSheet, SafeAreaView, Dimensions} from
 
 
 
-
+//
 export default function App() {
     const [date, setDate] = useState(new Date());
     const [isDarkTheme, setIsDarkTheme] = useState(true);
