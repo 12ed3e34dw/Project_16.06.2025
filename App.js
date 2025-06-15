@@ -7,7 +7,8 @@ import CalendarScreen from "./src/components/Calendar/Calendar_Page"; // Изм�
 import ProfileScreen from "./src/components/Profile_Users/Profile_Page";
 import SettingsScreen from "./src/components/Settings/Settings_Page";
 import HistoryScreen from "./src/components/History/History_Report";
-
+import Add_reportScreen from "./src/screens/Report/add_report";
+import Map_Screen from "./src/components/GeoLocation/Location"
 //_______________________________________________________________________________
 //Navigate
 const Stack = createStackNavigator();
@@ -20,6 +21,8 @@ function AppNavigator() {
                 <Stack.Screen name="Settings" component={SettingsScreen} />
                 <Stack.Screen name="Profile" component={ProfileScreen} />
                 <Stack.Screen name="History" component={HistoryScreen} />
+                <Stack.Screen name="Add_report" component={Add_reportScreen} />
+                <Stack.Screen name="Map" component={Map_Screen} />
             </Stack.Navigator>
         </NavigationContainer>
     );

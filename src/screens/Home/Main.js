@@ -25,10 +25,10 @@ export default function MainPage({ navigation }) {
                 </View>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => {}}>
+            <TouchableOpacity onPress={() => navigation.navigate('Map')}>
                 <View style={styles.container_Map_reported}>
                     <Image source={foto_1} style={styles.image_1} />
-                    <Text style={styles.text_cont_map_reported}>Map Reported</Text>
+                    <Text style={styles.text_cont_map_reported}>Map</Text>
                 </View>
             </TouchableOpacity>
 
@@ -46,15 +46,19 @@ export default function MainPage({ navigation }) {
                 </View>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={() =>{}}>
+            <TouchableOpacity onPress={() =>{navigation.navigate('Add_report')}}>
                 <View style={styles.container_Todo_Page}>
                     <Image source={foto_3} style={styles.image_3} />
                     <Text style={styles.text_cont_todo}>Add Reported</Text>
                 </View>
             </TouchableOpacity>
 
-          
-
+            <TouchableOpacity onPress={() =>{navigation.navigate('History')}}>
+          <View style={styles.container_history}>
+              <Image source={foto_5} style={styles.image_5}/>
+              <Text style={styles.text_cont_history}>History</Text>
+          </View>
+            </TouchableOpacity>
         </View>
     );
 }
@@ -68,7 +72,7 @@ const darkStyles = StyleSheet.create({
         left: 20,
         width: 390,
         height: 50,
-        marginTop: 250,
+        marginTop: 130,
         backgroundColor: 'white',
         borderRadius: 5,
         borderWidth: 2,
@@ -176,7 +180,26 @@ const darkStyles = StyleSheet.create({
         paddingHorizontal: 20,
 
     },
-
+    container_history:{
+        left: 20,
+        marginTop: 20,
+        width: 390,
+        height: 50,
+        backgroundColor: 'white',
+        borderRadius: 5,
+        borderWidth: 2,
+        borderColor: '#000',
+    },
+    text_cont_history:{
+        left:70,
+        top:-35,
+    },
+    image_5:{
+        top: -3,
+        left:10,
+        width: 48,
+        height: 48,
+    },
 });
 
 const lightStyles = StyleSheet.create({

@@ -20,10 +20,35 @@ export default function SettingsPage({ navigation }) {
     );
 }
 
-const darkStyles =StyleSheet.create({
+// Сначала определяем baseStyles
+const screenWidth = Dimensions.get('window').width;
+const cellWidth = screenWidth / 7;
+
+const baseStyles = StyleSheet.create({
+    container: {
+        flex: 1,
+        paddingTop: 20,
+        paddingHorizontal: 12,
+        backgroundColor: '#f9f9f9',
+    },
+});
+
+
+const darkStyles = StyleSheet.create({
+    ...baseStyles,
+    container: {
+        ...baseStyles.container,
+        backgroundColor: '#1a1a1a',
+    },
 
 });
 
-const lightStyles =StyleSheet.create({
-
+const lightStyles = StyleSheet.create({
+    ...baseStyles,
+    container: {
+        ...baseStyles.container,
+        left: 15,
+        top: 70,
+        backgroundColor: '#ffffff',
+    },
 });
