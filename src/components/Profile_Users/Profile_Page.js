@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, Dimensions, Button } from 'react-native';
 
-// Сначала определяем baseStyles
-const screenWidth = Dimensions.get('window').width;
-const cellWidth = screenWidth / 7;
+
+
 
 const baseStyles = StyleSheet.create({
     container: {
@@ -11,6 +10,13 @@ const baseStyles = StyleSheet.create({
         paddingTop: 20,
         paddingHorizontal: 12,
         backgroundColor: '#f9f9f9',
+    },
+    txt_email:{
+        backgroundColor: '#fff',
+
+    },
+    txt_password:{
+        backgroundColor: '#fff',
     },
 });
 
@@ -32,16 +38,28 @@ const lightStyles = StyleSheet.create({
         top: 70,
         backgroundColor: '#ffffff',
     },
+
 });
 
 
-export default function CalendarScreen({ navigation }) {
+export default function ProfileScreen({ navigation }) {
     const [date, setDate] = useState(new Date());
     const [isDarkTheme, setIsDarkTheme] = useState(true);
     const styles = isDarkTheme ? darkStyles : lightStyles;
 
     return (
         <SafeAreaView style={styles.container}>
+
+
+
+
+
+            <Text style={styles.txt_email}>Test text email</Text>
+
+            <Text style={styles.txt_password}>test text password</Text>
+
+
+
 
 
         </SafeAreaView>

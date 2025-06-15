@@ -1,18 +1,41 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import MainScreen from "./src/screens/Home/Main"; // Изменили имя импорта
+import CalendarScreen from "./src/components/Calendar/Calendar_Page"; // Изменили имя импорта
+import ProfileScreen from "./src/components/Profile_Users/Profile_Page";
+import SettingsScreen from "./src/components/Settings/Settings_Page";
+import HistoryScreen from "./src/components/History/History_Report";
 
-//import Authorization from "./src/screens/Auth/Auth";
-import Calendar from ""
+//_______________________________________________________________________________
+//Navigate
+const Stack = createStackNavigator();
+function AppNavigator() {
+    return (
+        <NavigationContainer>
+            <Stack.Navigator initialRouteName="Home">
+                <Stack.Screen name="Home" component={MainScreen} />
+                <Stack.Screen name="Calendar" component={CalendarScreen} />
+                <Stack.Screen name="Settings" component={SettingsScreen} />
+                <Stack.Screen name="Profile" component={ProfileScreen} />
+                <Stack.Screen name="History" component={HistoryScreen} />
+            </Stack.Navigator>
+        </NavigationContainer>
+    );
+}
+//_______________________________________________________________________________
 
 
 export default function App() {
-  return (
-    <View style={styles.container}>
-
-    </View>
-  );
+    return (
+        <>
+            <StatusBar style="auto" />
+            <AppNavigator />
+        </>
+    );
 }
 
 const styles = StyleSheet.create({
-  container: {},
+    container: {},
 });

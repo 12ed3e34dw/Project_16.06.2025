@@ -1,10 +1,7 @@
-import React, { useState,useEffect, } from 'react';
-import {View, Text, TouchableOpacity, StyleSheet, SafeAreaView, Image, TextInput, Dimensions, Alert,} from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, Image, TextInput, Dimensions, Alert, Button } from 'react-native';
 
-
-
-export default function Authorization() {
-
+export default function Authorization({ navigation }) {
     const [isDarkTheme, setIsDarkTheme] = useState(true);
     const styles = isDarkTheme ? darkStyles : lightStyles;
     const [email, setEmail] = useState('');
@@ -12,32 +9,42 @@ export default function Authorization() {
     const [password1, setPassword1] = useState('');
 
 
-    const Forms = () => {
+    const handleAuth = () => {
         if (email === '' || !email.includes('@') || !email.includes('.')) {
             Alert.alert('Помилка', 'Некоректний email');
             return;
         }
-        if (password !== password1) {
-            Alert.alert('Помилка', 'Паролі не співпадають');
-            return;
-        }
-        if (phone.length < 10) {
-            Alert.alert('Помилка', 'Некоректний номер телефону');
-            return;
-        }
+
     };
 
-
     return (
-        <View style={  styles.container }>
-            <Text style={ styles.main_text}>Authorization</Text>
-            <Text style={styles.text_email}>Введите электронная почта </Text>
-            <TextInput style={styles.input_email} placeholder="Email" onChangeText={setEmail}/>
+        <View style={styles.container}>
+            <Text style={styles.main_text}>Authorization</Text>
+            <Text style={styles.text_email}>Введите электронная почта</Text>
+            <TextInput
+                style={styles.input_email}
+                placeholder="Email"
+                value={email}
+                onChangeText={setEmail}
+            />
             <Text style={styles.text_password}>Введите пароль</Text>
-            <TextInput style={styles.input_password} placeholder="Password"  secureTextEntry onChangeText={setPassword}/>
+            <TextInput
+                style={styles.input_password}
+                placeholder="Password"
+                secureTextEntry
+                value={password}
+                onChangeText={setPassword}
+            />
             <Text style={styles.text_password_1}>Повторите введенный пароль</Text>
-            <TextInput style={styles.input_password_1} placeholder="Password"  secureTextEntry onChangeText={setPassword1}/>
-            <TouchableOpacity>
+            <TextInput
+                style={styles.input_password_1}
+                placeholder="Password"
+                secureTextEntry
+                value={password1}
+                onChangeText={setPassword1}
+            />
+
+            <TouchableOpacity onPress={handleAuth}>
                 <View style={styles.button_Auth}>
                     <Text style={styles.button_text}>Войти</Text>
                 </View>
@@ -109,11 +116,11 @@ const darkStyles=StyleSheet.create({
         left:'5%',
     },
     text_password:{
-        top:'38%',
+        top:'36%',
         left:'5%',
     },
     text_password_1:{
-        top:'42%',
+        top:'40%',
         left:'5%',
     },
 
@@ -123,3 +130,4 @@ const darkStyles=StyleSheet.create({
 const lightStyles=StyleSheet.create({
 
 });
+
