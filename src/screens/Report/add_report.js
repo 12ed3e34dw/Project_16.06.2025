@@ -12,7 +12,10 @@ export default function Add_report({ navigation }) {
     return (
         <View style={styles.container}>
 
+            <Text></Text>
+           <TextInput>
 
+           </TextInput>
 
 
 
