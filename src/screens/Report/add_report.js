@@ -1,57 +1,191 @@
-import React, { useState,useEffect, } from 'react';
-import {View, Text, TouchableOpacity, StyleSheet, SafeAreaView, Image, TextInput,   Dimensions,} from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import React, { useState, useEffect } from 'react';
+import {
+    View, Text, TouchableOpacity, StyleSheet,
+    TextInput, Image, Dimensions, Alert
+} from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
+import * as Location from 'expo-location';
 
-
-export default function Add_report({ navigation }) {
-
+export default function Add_report() {
+    const [description, setDescription] = useState('');
+    const [imageUri, setImageUri] = useState(null);
+    const [location, setLocation] = useState(null);
+    const [date, setDate] = useState('');
     const [isDarkTheme, setIsDarkTheme] = useState(true);
     const styles = isDarkTheme ? darkStyles : lightStyles;
 
+    useEffect(() => {
+        const now = new Date();
+        setDate(now.toISOString());
+
+        (async () => {
+            let { status } = await Location.requestForegroundPermissionsAsync();
+            if (status !== 'granted') {
+                Alert.alert('Помилка', 'Доступ до геолокації заборонено');
+                return;
+            }
+
+            const loc = await Location.getCurrentPositionAsync({});
+            setLocation(loc.coords);
+        })();
+    }, []);
+
+    const takePhoto = async () => {
+        const permission = await ImagePicker.requestCameraPermissionsAsync();
+        if (permission.status !== 'granted') {
+            Alert.alert('Помилка', 'Потрібен дозвіл на камеру');
+            return;
+        }
+
+        const result = await ImagePicker.launchCameraAsync({
+            quality: 0.5,
+            base64: false,
+        });
+
+        if (!result.cancelled) {
+            setImageUri(result.uri);
+        }
+    };
+
+    const handleSave = async () => {
+        console.log('Поля перед перевіркою:', { description, imageUri, location });
+
+        if (!description.trim() || !imageUri || !location) {
+            Alert.alert('Помилка', 'Заповніть всі поля');
+            return;
+        }
+
+        const reportData = {
+            description,
+            imageUri,
+            date,
+            latitude: location.latitude,
+            longitude: location.longitude,
+        };
+
+        console.log('Збереження правопорушення:', reportData);
+
+        // TODO: Зберегти в БД
+    };
+    const getLocation = async () => {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+            Alert.alert('Помилка', 'Доступ до геолокації заборонено');
+            return;
+        }
+
+        const loc = await Location.getCurrentPositionAsync({});
+        setLocation(loc.coords);
+        Alert.alert('Геолокація отримана', `Широта: ${loc.coords.latitude}, Довгота: ${loc.coords.longitude}`);
+    };
+
+
     return (
         <View style={styles.container}>
+            <Text style={styles.title}>Додати правопорушення</Text>
 
-            <Text></Text>
-           <TextInput>
+            <TouchableOpacity style={styles.button} onPress={takePhoto}>
+                <Text style={styles.buttonText}>📷 Зробити фото</Text>
+            </TouchableOpacity>
 
-           </TextInput>
+            {imageUri && <Image source={{ uri: imageUri }} style={styles.image} />}
 
+            <TextInput
+                placeholder="Опис порушення"
+                style={styles.input}
+                placeholderTextColor={isDarkTheme ? '#ccc' : '#666'}
+                value={description}
+                onChangeText={setDescription}
+            />
 
+            <TouchableOpacity style={styles.button} onPress={getLocation}>
+                <Text style={styles.buttonText}>Отримати геолокацію</Text>
+            </TouchableOpacity>
 
+            {location && (
+                <Text style={{ color: isDarkTheme ? '#ccc' : '#333', marginTop: 8 }}>
+                     Геолокація: {location.latitude.toFixed(4)}, {location.longitude.toFixed(4)}
+                </Text>
+            )}
+
+            <TouchableOpacity style={styles.button} onPress={handleSave}>
+                <Text style={styles.buttonText}>💾 Зберегти</Text>
+            </TouchableOpacity>
         </View>
+
     );
 }
 
-// Сначала определяем baseStyles
 const screenWidth = Dimensions.get('window').width;
-const cellWidth = screenWidth / 7;
 
-const baseStyles = StyleSheet.create({
+const baseStyles = {
     container: {
         flex: 1,
-        paddingTop: 20,
-        paddingHorizontal: 12,
-        backgroundColor: '#f9f9f9',
+        padding: 20,
     },
-});
-
+    title: {
+        fontSize: 20,
+        marginBottom: 12,
+        fontWeight: 'bold',
+        textAlign: 'center',
+    },
+    button: {
+        backgroundColor: '#4caf50',
+        padding: 12,
+        borderRadius: 10,
+        marginTop: 10,
+        alignItems: 'center',
+    },
+    buttonText: {
+        color: '#fff',
+        fontWeight: 'bold',
+    },
+    input: {
+        borderWidth: 1,
+        borderColor: '#aaa',
+        borderRadius: 8,
+        padding: 10,
+        marginTop: 12,
+        fontSize: 16,
+    },
+    image: {
+        width: screenWidth - 40,
+        height: 200,
+        borderRadius: 8,
+        marginTop: 10,
+    },
+};
 
 const darkStyles = StyleSheet.create({
     ...baseStyles,
     container: {
         ...baseStyles.container,
-        backgroundColor: '#1a1a1a',
+        backgroundColor: '#121212',
     },
-
+    title: {
+        ...baseStyles.title,
+        color: '#fff',
+    },
+    input: {
+        ...baseStyles.input,
+        backgroundColor: '#1f1f1f',
+        color: '#fff',
+    },
 });
 
 const lightStyles = StyleSheet.create({
     ...baseStyles,
     container: {
         ...baseStyles.container,
-        left: 15,
-        top: 70,
-        backgroundColor: '#ffffff',
+        backgroundColor: '#f9f9f9',
+    },
+    title: {
+        ...baseStyles.title,
+        color: '#000',
+    },
+    input: {
+        ...baseStyles.input,
+        backgroundColor: '#fff',
+        color: '#000',
     },
 });

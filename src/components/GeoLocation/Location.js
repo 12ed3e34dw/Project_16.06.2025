@@ -1,38 +1,68 @@
-import React, { useState,useEffect, } from 'react';
-import {View, Text, TouchableOpacity, StyleSheet, SafeAreaView, Image, TextInput,   Dimensions,} from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, Dimensions, ActivityIndicator, Alert } from 'react-native';
+import MapView, { Marker } from 'react-native-maps';
+import * as Location from 'expo-location';
 
-
-export default function Map({ navigation }) {
-
+export default function Map() {
+    const [location, setLocation] = useState(null);
     const [isDarkTheme, setIsDarkTheme] = useState(true);
     const styles = isDarkTheme ? darkStyles : lightStyles;
 
+    useEffect(() => {
+        (async () => {
+            let { status } = await Location.requestForegroundPermissionsAsync();
+            if (status !== 'granted') {
+                Alert.alert('Помилка', 'Доступ до геолокації заборонено');
+                return;
+            }
+
+            let loc = await Location.getCurrentPositionAsync({});
+            setLocation(loc.coords);
+        })();
+    }, []);
+
     return (
         <View style={styles.container}>
-
-
-
-
-
+            {!location ? (
+                <ActivityIndicator size="large" color="#4caf50" />
+            ) : (
+                <MapView
+                    style={styles.map}
+                    initialRegion={{
+                        latitude: location.latitude,
+                        longitude: location.longitude,
+                        latitudeDelta: 0.01,
+                        longitudeDelta: 0.01,
+                    }}
+                >
+                    <Marker
+                        coordinate={{
+                            latitude: location.latitude,
+                            longitude: location.longitude,
+                        }}
+                        title="Ти тут"
+                        description="Поточне місцезнаходження"
+                    />
+                </MapView>
+            )}
         </View>
     );
 }
 
-// Сначала определяем baseStyles
 const screenWidth = Dimensions.get('window').width;
-const cellWidth = screenWidth / 7;
+const screenHeight = Dimensions.get('window').height;
 
 const baseStyles = StyleSheet.create({
     container: {
         flex: 1,
-        paddingTop: 20,
-        paddingHorizontal: 12,
-        backgroundColor: '#f9f9f9',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    map: {
+        width: screenWidth,
+        height: screenHeight,
     },
 });
-
 
 const darkStyles = StyleSheet.create({
     ...baseStyles,
@@ -40,15 +70,12 @@ const darkStyles = StyleSheet.create({
         ...baseStyles.container,
         backgroundColor: '#1a1a1a',
     },
-
 });
 
 const lightStyles = StyleSheet.create({
     ...baseStyles,
     container: {
         ...baseStyles.container,
-        left: 15,
-        top: 70,
         backgroundColor: '#ffffff',
     },
 });

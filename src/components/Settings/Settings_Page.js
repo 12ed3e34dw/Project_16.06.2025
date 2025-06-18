@@ -1,17 +1,25 @@
-import React, { useState,useEffect, } from 'react';
-import {View, Text, TouchableOpacity, StyleSheet, SafeAreaView, Image, TextInput,   Dimensions,} from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
-
+import React, { useState } from 'react';
+import {
+    View,
+    Text,
+    TouchableOpacity,
+    StyleSheet,
+    Dimensions,
+    SectionList,
+} from 'react-native';
 
 export default function SettingsPage({ navigation }) {
-
+    const [selected, setSelected] = useState(null);
     const [isDarkTheme, setIsDarkTheme] = useState(true);
     const styles = isDarkTheme ? darkStyles : lightStyles;
+
 
     return (
         <View style={styles.container}>
 
+            <Text style={styles.txt_styles}>Style </Text>
+            <Text style={styles.txt_dark_style}>🌙 Dark style</Text>
+            <Text style={styles.txt_light_style}>☀️ Light style</Text>
 
 
 
@@ -20,19 +28,16 @@ export default function SettingsPage({ navigation }) {
     );
 }
 
-// Сначала определяем baseStyles
 const screenWidth = Dimensions.get('window').width;
-const cellWidth = screenWidth / 7;
 
 const baseStyles = StyleSheet.create({
     container: {
         flex: 1,
         paddingTop: 20,
         paddingHorizontal: 12,
-        backgroundColor: '#f9f9f9',
     },
-});
 
+});
 
 const darkStyles = StyleSheet.create({
     ...baseStyles,
@@ -40,15 +45,46 @@ const darkStyles = StyleSheet.create({
         ...baseStyles.container,
         backgroundColor: '#1a1a1a',
     },
+    txt_dark_style: {
+        color: '#ffffff',
+        fontSize: 16,
+        top:20,
+    },
+    txt_light_style: {
+        color: '#ffffff',
+        fontSize: 16,
+        marginBottom: 10,
+        left:190,
 
+    },
+    txt_styles:{
+        color: '#ffffff',
+        fontSize: 25,
+        fontWeight: '600',
+    },
 });
 
 const lightStyles = StyleSheet.create({
     ...baseStyles,
     container: {
         ...baseStyles.container,
-        left: 15,
-        top: 70,
         backgroundColor: '#ffffff',
     },
+    txt_dark_style: {
+        color: '#000000',
+        fontSize: 16,
+    },
+    txt_light_style: {
+        color: '#000000',
+        fontSize: 16,
+        marginBottom: 10,
+    },
+    header: {
+        ...baseStyles.header,
+        color: '#000000',
+    },
+    itemText: {
+        color: '#000000',
+    },
 });
+
