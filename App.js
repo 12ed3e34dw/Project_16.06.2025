@@ -10,7 +10,6 @@ import HistoryScreen from "./src/components/History/History_Report";
 import Add_reportScreen from "./src/screens/Report/add_report";
 import Map_Screen from "./src/components/GeoLocation/Location";
 import { Theme } from "./src/styles/Theme"; // Обёртка контекста темы
-
 const Stack = createStackNavigator();
 
 

@@ -3,7 +3,10 @@ import {View, Text, TouchableOpacity, StyleSheet, TextInput, Image, Dimensions, 
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
 import { useTheme } from '../../styles/Theme';
-export default function Add_report() {
+import {Ionicons} from "@expo/vector-icons";
+
+
+export default function Add_report({ navigation }) {
     const [description, setDescription] = useState('');
     const [imageUri, setImageUri] = useState(null);
     const [location, setLocation] = useState(null);
@@ -62,7 +65,7 @@ export default function Add_report() {
 
         console.log('Збереження правопорушення:', reportData);
 
-        // TODO: Зберегти в БД
+
     };
     const getLocation = async () => {
         let { status } = await Location.requestForegroundPermissionsAsync();
@@ -79,6 +82,7 @@ export default function Add_report() {
 
     return (
         <View style={styles.container}>
+
             <Text style={styles.title}>Додати правопорушення</Text>
 
             <TouchableOpacity style={styles.button} onPress={takePhoto}>
@@ -132,6 +136,7 @@ const baseStyles = {
         borderRadius: 10,
         marginTop: 10,
         alignItems: 'center',
+
     },
     buttonText: {
         color: '#fff',

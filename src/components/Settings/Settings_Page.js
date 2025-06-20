@@ -1,30 +1,45 @@
 import React from 'react';
-import { View, Text, Switch, StyleSheet } from 'react-native';
+import { View, Text, Switch, StyleSheet, TouchableOpacity } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import { useTheme } from '../../styles/Theme'; // относительный путь
+import { useTheme } from '../../styles/Theme';
+import { Ionicons } from '@expo/vector-icons';
 
-export default function SettingsPage() {
+export default function SettingsPage({ navigation }) {
     const { isDarkTheme, toggleTheme } = useTheme();
     const [selected, setSelected] = React.useState(null);
     const styles = isDarkTheme ? darkStyles : lightStyles;
 
     return (
         <View style={styles.container}>
+            {/* Улучшенная кнопка "Назад" */}
+            <TouchableOpacity
+                style={styles.backButton}
+                onPress={() => navigation.goBack()}
+                activeOpacity={0.7}
+            >
+                <Ionicons
+                    name="chevron-back"
+                    size={24}
+                    color={isDarkTheme ? '#fff' : '#000'}
+                />
+                <Text style={styles.backButtonText}>Назад</Text>
+            </TouchableOpacity>
+
             <View style={styles.themeRow}>
-                <Text style={styles.txt_styles}>Theme</Text>
+                <Text style={styles.txt_styles}>Thema</Text>
                 <Switch
                     style={styles.switch_button}
                     value={isDarkTheme}
                     onValueChange={toggleTheme}
-                    trackColor={{ false: '#767577', true: '#767577' }}
+                    trackColor={{ false: '#767577', true: '#81b0ff' }}
                     thumbColor={isDarkTheme ? '#f5dd4b' : '#f4f3f4'}
                     ios_backgroundColor="#3e3e3e"
                 />
             </View>
 
             <View style={styles.themeLabels}>
-                <Text style={styles.txt_dark_style}>🌙 Dark</Text>
-                <Text style={styles.txt_light_style}>☀️ Light</Text>
+                <Text style={styles.txt_dark_style}>🌙 Темная</Text>
+                <Text style={styles.txt_light_style}>☀️ Светлая</Text>
             </View>
 
             <Text style={styles.txt_languages}>Language</Text>
@@ -32,6 +47,7 @@ export default function SettingsPage() {
                 selectedValue={selected}
                 onValueChange={(itemValue) => setSelected(itemValue)}
                 style={styles.picker_languages}
+                dropdownIconColor={isDarkTheme ? '#fff' : '#000'}
             >
                 <Picker.Item label="English" value="1" />
                 <Picker.Item label="Українська" value="2" />
@@ -39,8 +55,6 @@ export default function SettingsPage() {
         </View>
     );
 }
-
-// ========== Стили как у тебя ==========
 
 const baseStyles = StyleSheet.create({
     container: {
@@ -65,9 +79,10 @@ const baseStyles = StyleSheet.create({
     },
     txt_dark_style: {
         fontSize: 16,
+        left:-10,
     },
     txt_light_style: {
-        left: -190,
+        left: -170,
         fontSize: 16,
     },
     txt_languages: {
@@ -82,6 +97,17 @@ const baseStyles = StyleSheet.create({
     switch_button: {
         top: 45,
         left: -260,
+    },
+    backButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: 8,
+        marginBottom: 20,
+        alignSelf: 'flex-start',
+    },
+    backButtonText: {
+        fontSize: 18,
+        marginLeft: 5,
     },
 });
 
@@ -110,6 +136,11 @@ const darkStyles = StyleSheet.create({
     picker_languages: {
         ...baseStyles.picker_languages,
         color: '#ffffff',
+        backgroundColor: '#2a2a2a',
+    },
+    backButtonText: {
+        ...baseStyles.backButtonText,
+        color: '#ffffff',
     },
 });
 
@@ -137,6 +168,11 @@ const lightStyles = StyleSheet.create({
     },
     picker_languages: {
         ...baseStyles.picker_languages,
+        color: '#000000',
+        backgroundColor: '#f5f5f5',
+    },
+    backButtonText: {
+        ...baseStyles.backButtonText,
         color: '#000000',
     },
 });

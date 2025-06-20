@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Dimensions, ActivityIndicator, Alert } from 're
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 
-export default function Map() {
+export default function Map({ navigation }) {
     const [location, setLocation] = useState(null);
     const [isDarkTheme, setIsDarkTheme] = useState(true);
     const styles = isDarkTheme ? darkStyles : lightStyles;
@@ -26,25 +26,12 @@ export default function Map() {
             {!location ? (
                 <ActivityIndicator size="large" color="#4caf50" />
             ) : (
-                <MapView
-                    style={styles.map}
-                    initialRegion={{
-                        latitude: location.latitude,
-                        longitude: location.longitude,
-                        latitudeDelta: 0.01,
-                        longitudeDelta: 0.01,
-                    }}
-                >
-                    <Marker
-                        coordinate={{
-                            latitude: location.latitude,
-                            longitude: location.longitude,
-                        }}
-                        title="Ти тут"
-                        description="Поточне місцезнаходження"
-                    />
+                <MapView style={styles.map} initialRegion={{latitude: location.latitude, longitude: location.longitude, latitudeDelta: 0.01, longitudeDelta: 0.01,}}>
+                    <Marker coordinate={{latitude: location.latitude, longitude: location.longitude,}} title="Ти тут" description="Поточне місцезнаходження"/>
                 </MapView>
             )}
+
+
         </View>
     );
 }
@@ -62,6 +49,8 @@ const baseStyles = StyleSheet.create({
         width: screenWidth,
         height: screenHeight,
     },
+
+
 });
 
 const darkStyles = StyleSheet.create({
@@ -70,6 +59,8 @@ const darkStyles = StyleSheet.create({
         ...baseStyles.container,
         backgroundColor: '#1a1a1a',
     },
+
+
 });
 
 const lightStyles = StyleSheet.create({
@@ -78,4 +69,6 @@ const lightStyles = StyleSheet.create({
         ...baseStyles.container,
         backgroundColor: '#ffffff',
     },
+
+
 });
