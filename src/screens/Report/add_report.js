@@ -1,17 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import {
-    View, Text, TouchableOpacity, StyleSheet,
-    TextInput, Image, Dimensions, Alert
-} from 'react-native';
+import {View, Text, TouchableOpacity, StyleSheet, TextInput, Image, Dimensions, Alert} from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
-
+import { useTheme } from '../../styles/Theme';
 export default function Add_report() {
     const [description, setDescription] = useState('');
     const [imageUri, setImageUri] = useState(null);
     const [location, setLocation] = useState(null);
     const [date, setDate] = useState('');
-    const [isDarkTheme, setIsDarkTheme] = useState(true);
+    const { isDarkTheme } = useTheme();
     const styles = isDarkTheme ? darkStyles : lightStyles;
 
     useEffect(() => {

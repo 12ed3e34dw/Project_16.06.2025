@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, Dimensions } from 'react-native';
+import {useTheme} from "../../styles/Theme";
 
 const screenWidth = Dimensions.get('window').width;
 
 export default function CalendarScreen() {
     const [currentDate, setCurrentDate] = useState(new Date());
-    const [isDarkTheme, setIsDarkTheme] = useState(true);
+    const { isDarkTheme } = useTheme();
+    const styles = isDarkTheme ? darkStyles : lightStyles;
 
     const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
@@ -50,7 +52,7 @@ export default function CalendarScreen() {
     };
 
     const days = getDaysInMonth(currentDate);
-    const styles = isDarkTheme ? darkStyles : lightStyles;
+
 
     return (
         <SafeAreaView style={styles.container}>

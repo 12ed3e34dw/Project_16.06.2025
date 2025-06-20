@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, Dimensions, Button } from 'react-native';
+import {useTheme} from "../../styles/Theme";
 
 
 
@@ -44,7 +45,7 @@ const lightStyles = StyleSheet.create({
 
 export default function ProfileScreen({ navigation }) {
     const [date, setDate] = useState(new Date());
-    const [isDarkTheme, setIsDarkTheme] = useState(true);
+    const { isDarkTheme } = useTheme();
     const styles = isDarkTheme ? darkStyles : lightStyles;
 
     return (

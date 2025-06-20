@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, Image, TextInput, Dimensions, Alert, Button } from 'react-native';
-
+import { useTheme } from '../../styles/Theme';
 export default function Authorization({ navigation }) {
-    const [isDarkTheme, setIsDarkTheme] = useState(true);
+    const { isDarkTheme } = useTheme();
     const styles = isDarkTheme ? darkStyles : lightStyles;
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');

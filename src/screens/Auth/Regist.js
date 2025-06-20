@@ -1,11 +1,11 @@
 import React, { useState,useEffect, } from 'react';
 import {View, Text, TouchableOpacity, StyleSheet, SafeAreaView, Image, TextInput,   Dimensions,} from 'react-native';
-
+import { useTheme } from '../../styles/Theme';
 
 
 export default function Registration_Page() {
 
-    const [isDarkTheme, setIsDarkTheme] = useState(true);
+    const { isDarkTheme } = useTheme();
     const styles = isDarkTheme ? darkStyles : lightStyles;
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');

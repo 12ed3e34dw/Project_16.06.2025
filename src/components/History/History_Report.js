@@ -2,11 +2,11 @@ import React, { useState,useEffect, } from 'react';
 import {View, Text, TouchableOpacity, StyleSheet, SafeAreaView, Image, TextInput,   Dimensions,} from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-
+import {useTheme} from "../../styles/Theme"; // Обёртка контекста темы
 
 export default function History({ navigation }) {
 
-    const [isDarkTheme, setIsDarkTheme] = useState(true);
+    const { isDarkTheme } = useTheme();
     const styles = isDarkTheme ? darkStyles : lightStyles;
 
     return (
