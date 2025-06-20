@@ -83,6 +83,18 @@ export default function Add_report({ navigation }) {
     return (
         <View style={styles.container}>
 
+
+            <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+                <Ionicons name="arrow-back" size={24} color={styles.backButtonIconColor?.color || '#000'} />
+                <Text style={styles.backButtonText}>Назад</Text>
+            </TouchableOpacity>
+
+
+
+
+
+
+
             <Text style={styles.title}>Додати правопорушення</Text>
 
             <TouchableOpacity style={styles.button} onPress={takePhoto}>
@@ -156,6 +168,16 @@ const baseStyles = {
         borderRadius: 8,
         marginTop: 10,
     },
+    backButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        left:-20,
+        top:10,
+        width: '200%',
+        paddingVertical: 8,
+        paddingHorizontal: 12,
+        alignSelf: 'flex-start',
+    },
 };
 
 const darkStyles = StyleSheet.create({
@@ -172,6 +194,13 @@ const darkStyles = StyleSheet.create({
         ...baseStyles.input,
         backgroundColor: '#1f1f1f',
         color: '#fff',
+    },
+    backButtonIconColor: {
+        color: '#ffffff',
+    },
+    backButtonText: {
+        ...baseStyles.backButtonText,
+        color: '#ffffff',
     },
 });
 

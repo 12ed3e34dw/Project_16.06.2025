@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, Dimensions } from 'react-native';
 import {useTheme} from "../../styles/Theme";
+import {Ionicons} from "@expo/vector-icons";
 
 const screenWidth = Dimensions.get('window').width;
 
-export default function CalendarScreen() {
+export default function CalendarScreen({ navigation }) {
     const [currentDate, setCurrentDate] = useState(new Date());
     const { isDarkTheme } = useTheme();
     const styles = isDarkTheme ? darkStyles : lightStyles;
@@ -56,6 +57,14 @@ export default function CalendarScreen() {
 
     return (
         <SafeAreaView style={styles.container}>
+
+
+            <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+                <Ionicons name="arrow-back" size={24} color={styles.backButtonIconColor?.color || '#000'} />
+                <Text style={styles.backButtonText}>Назад</Text>
+            </TouchableOpacity>
+
+
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => changeMonth(-1)}>
                     <Text style={styles.navText}>{'<'}</Text>
@@ -146,6 +155,16 @@ const baseStyles = {
         color: '#fff',
         fontWeight: 'bold',
     },
+    backButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        left:-20,
+        top:-10,
+        width: '200%',
+        paddingVertical: 8,
+        paddingHorizontal: 12,
+        alignSelf: 'flex-start',
+    },
 };
 
 const lightStyles = StyleSheet.create({
@@ -181,6 +200,13 @@ const darkStyles = StyleSheet.create({
     toggleText: {
         ...baseStyles.toggleText,
         color: '#fff',
+    },
+    backButtonText: {
+        ...baseStyles.backButtonText,
+        color: '#ffffff',
+    },
+    backButtonIconColor: {
+        color: '#ffffff',
     },
 });
 
