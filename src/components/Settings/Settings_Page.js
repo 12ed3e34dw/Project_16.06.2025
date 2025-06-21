@@ -3,7 +3,7 @@ import { View, Text, Switch, StyleSheet, TouchableOpacity } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { useTheme } from '../../styles/Theme';
 import { Ionicons } from '@expo/vector-icons'; // Иконки Expo
-//import { loadLanguage, changeLanguage } from '../../i18n/locales';
+//import { loadLanguage, changeLanguage } from '../i18n/locales/index';
 import {useEffect} from "react";
 import {useTranslation} from "react-i18next";
 import {StatusBar} from "expo-status-bar";
@@ -15,15 +15,15 @@ export default function SettingsPage({ navigation }) {
     const styles = isDarkTheme ? darkStyles : lightStyles;
     const {t} = useTranslation();
 
-    const handleLanguageChange = (lang) => {
-        console.log(lang)
-        changeLanguage(lang);
-    }
-
-    useEffect(() => {
-        loadLanguage();
-    }, []);
-
+    // const handleLanguageChange = (lang) => {
+    //     console.log(lang)
+    //     changeLanguage(lang);
+    // }
+    //
+    // useEffect(() => {
+    //     loadLanguage();
+    // }, []);
+    //
 
 
 

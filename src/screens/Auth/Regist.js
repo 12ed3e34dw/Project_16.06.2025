@@ -1,51 +1,83 @@
-import React, { useState,useEffect, } from 'react';
-import {View, Text, TouchableOpacity, StyleSheet, SafeAreaView, Image, TextInput,   Dimensions,} from 'react-native';
+import React, { useState } from 'react';
+import {
+    View,
+    Text,
+    TouchableOpacity,
+    StyleSheet,
+    TextInput,
+    Alert,
+} from 'react-native';
 import { useTheme } from '../../styles/Theme';
 
-
-export default function Registration_Page() {
-
+export default function Registration_Page({ navigation }) {
     const { isDarkTheme } = useTheme();
     const styles = isDarkTheme ? darkStyles : lightStyles;
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [password1, setPassword1] = useState('');
 
-
-    const Forms = () => {
-        if (email === '' || !email.includes('@') || !email.includes('.')) {
+    const handleRegister = () => {
+        if (!email || !email.includes('@') || !email.includes('.')) {
             Alert.alert('Помилка', 'Некоректний email');
             return;
         }
+
+        if (password.length < 6) {
+            Alert.alert('Помилка', 'Пароль повинен містити щонайменше 6 символів');
+            return;
+        }
+
         if (password !== password1) {
             Alert.alert('Помилка', 'Паролі не співпадають');
             return;
         }
-        if (phone.length < 10) {
-            Alert.alert('Помилка', 'Некоректний номер телефону');
-            return;
-        }
+
+        Alert.alert('Успіх', 'Акаунт створено!');
+        navigation.navigate('Home');
     };
 
-
     return (
-        <View style={  styles.container }>
-            <Text style={ styles.main_text}>Registration</Text>
-            <Text style={styles.text_email}>Введите электронная почта </Text>
-            <TextInput style={styles.input_email} placeholder="Email" onChangeText={setEmail}/>
-            <Text style={styles.text_password}>Введите пароль</Text>
-            <TextInput style={styles.input_password} placeholder="Password"  secureTextEntry onChangeText={setPassword}/>
-            <Text style={styles.text_password_1}>Повторите введенный пароль</Text>
-            <TextInput style={styles.input_password_1} placeholder="Password"  secureTextEntry onChangeText={setPassword1}/>
-            <TouchableOpacity>
-                <View style={styles.button_Regist}>
-                    <Text style={styles.button_text}>Создать аккаунт</Text>
-                </View>
-            </TouchableOpacity>
+        <View style={styles.container}>
+            <Text style={styles.main_text}>Реєстрація</Text>
 
+            <Text style={styles.text_email}>Електронна пошта</Text>
+            <TextInput
+                style={styles.input_email}
+                placeholder="Email"
+                placeholderTextColor={isDarkTheme ? '#ccc' : '#666'}
+                onChangeText={setEmail}
+                value={email}
+                keyboardType="email-address"
+            />
+
+            <Text style={styles.text_password}>Пароль</Text>
+            <TextInput
+                style={styles.input_password}
+                placeholder="Пароль"
+                placeholderTextColor={isDarkTheme ? '#ccc' : '#666'}
+                secureTextEntry
+                onChangeText={setPassword}
+                value={password}
+            />
+
+            <Text style={styles.text_password_1}>Повторіть пароль</Text>
+            <TextInput
+                style={styles.input_password_1}
+                placeholder="Повторно пароль"
+                placeholderTextColor={isDarkTheme ? '#ccc' : '#666'}
+                secureTextEntry
+                onChangeText={setPassword1}
+                value={password1}
+            />
+
+            <TouchableOpacity style={styles.button_Regist} onPress={handleRegister}>
+                <Text style={styles.button_text}>Створити акаунт</Text>
+            </TouchableOpacity>
         </View>
     );
 }
+
 
 const darkStyles=StyleSheet.create({
     button_Regist: {
@@ -98,15 +130,15 @@ const darkStyles=StyleSheet.create({
         fontSize:20,
     },
     text_email: {
-        top:'35%',
+        top:'25%',
         left:'5%',
     },
     text_password:{
-        top:'40%',
+        top:'28%',
         left:'5%',
     },
     text_password_1:{
-        top:'45%',
+        top:'31%',
         left:'5%',
     },
 });

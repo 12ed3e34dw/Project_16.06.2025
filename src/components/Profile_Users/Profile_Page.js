@@ -1,17 +1,15 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, Dimensions, Button } from 'react-native';
-import {useTheme} from "../../styles/Theme";
-import {Ionicons} from "@expo/vector-icons";
 
-
-
+import React, { useEffect, useState } from 'react';
+import {View, Text, TouchableOpacity, StyleSheet, SafeAreaView, TextInput,} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useTheme } from '../../styles/Theme';
+import { Ionicons } from '@expo/vector-icons';
 
 const baseStyles = StyleSheet.create({
     container: {
         flex: 1,
         paddingTop: 20,
         paddingHorizontal: 12,
-        backgroundColor: '#f9f9f9',
     },
     txt_email: {
         backgroundColor: '#fff',
@@ -24,17 +22,18 @@ const baseStyles = StyleSheet.create({
         backgroundColor: '#fff',
         padding: 10,
         borderRadius: 8,
+        marginVertical: 10,
         fontSize: 16,
+    },
+    label: {
+        fontSize: 14,
+        marginTop: 20,
+        marginBottom: 4,
     },
     backButton: {
         flexDirection: 'row',
         alignItems: 'center',
-        left: -20,
-        top: 10,
-        width: '200%',
-        paddingVertical: 8,
-        paddingHorizontal: 12,
-        alignSelf: 'flex-start',
+        marginBottom: 20,
     },
     backButtonText: {
         fontSize: 16,
@@ -59,6 +58,10 @@ const darkStyles = StyleSheet.create({
         backgroundColor: '#2a2a2a',
         color: '#ffffff',
     },
+    label: {
+        ...baseStyles.label,
+        color: '#ccc',
+    },
     backButtonText: {
         ...baseStyles.backButtonText,
         color: '#ffffff',
@@ -72,8 +75,6 @@ const lightStyles = StyleSheet.create({
     ...baseStyles,
     container: {
         ...baseStyles.container,
-        left: 15,
-        top: 70,
         backgroundColor: '#ffffff',
     },
     txt_email: {
@@ -84,6 +85,10 @@ const lightStyles = StyleSheet.create({
         ...baseStyles.txt_password,
         color: '#000000',
     },
+    label: {
+        ...baseStyles.label,
+        color: '#333',
+    },
     backButtonText: {
         ...baseStyles.backButtonText,
         color: '#000000',
@@ -93,31 +98,38 @@ const lightStyles = StyleSheet.create({
     },
 });
 
-
-
 export default function ProfileScreen({ navigation }) {
-    const [date, setDate] = useState(new Date());
     const { isDarkTheme } = useTheme();
     const styles = isDarkTheme ? darkStyles : lightStyles;
 
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+
+    useEffect(() => {
+        const loadUserData = async () => {
+            try {
+                const storedEmail = await AsyncStorage.getItem('email');
+                const storedPassword = await AsyncStorage.getItem('password');
+
+                if (storedEmail) setEmail(storedEmail);
+                if (storedPassword) setPassword(storedPassword);
+            } catch (error) {
+                console.log('Ошибка при загрузке данных из AsyncStorage:', error);
+            }
+        };
+        loadUserData();
+    }, []);
+
     return (
         <SafeAreaView style={styles.container}>
-
             <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-                <Ionicons name="arrow-back" size={24} color={styles.backButtonIconColor?.color || '#000'} />
+                <Ionicons name="arrow-back" size={24} color={styles.backButtonIconColor?.color || '#000'}/>
                 <Text style={styles.backButtonText}>Назад</Text>
             </TouchableOpacity>
-
-
-
-            <Text style={styles.txt_email}>Test text email</Text>
-
-            <Text style={styles.txt_password}>test text password</Text>
-
-
-
-
-
+            <Text style={styles.label}>Електронна пошта</Text>
+            <TextInput style={styles.txt_email} value={email} editable={false}/>
+            <Text style={styles.label}>Пароль</Text>
+            <TextInput style={styles.txt_password} value={password} secureTextEntry editable={false}/>
         </SafeAreaView>
     );
 }

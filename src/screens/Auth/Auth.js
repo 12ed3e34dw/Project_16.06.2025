@@ -1,60 +1,50 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, Image, TextInput, Dimensions, Alert, Button } from 'react-native';
+import {View, Text, TouchableOpacity, StyleSheet, TextInput, Alert
+} from 'react-native';
 import { useTheme } from '../../styles/Theme';
+import { useAuth } from './AuthContext';
+
 export default function Authorization({ navigation }) {
     const { isDarkTheme } = useTheme();
     const styles = isDarkTheme ? darkStyles : lightStyles;
+
+    const { login } = useAuth();
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [password1, setPassword1] = useState('');
 
-
-    const handleAuth = () => {
-        if (email === '' || !email.includes('@') || !email.includes('.')) {
+    const handleAuth = async () => {
+        if (!email || !email.includes('@') || !email.includes('.')) {
             Alert.alert('Помилка', 'Некоректний email');
             return;
         }
-
+        if (!password || password.length < 6) {
+            Alert.alert('Помилка', 'Пароль занадто короткий');
+            return;
+        }
+        await login();
+        Alert.alert('Успіх', 'Авторизація пройдена!');
     };
 
     return (
         <View style={styles.container}>
-            <Text style={styles.main_text}>Authorization</Text>
-            <Text style={styles.text_email}>Введите электронная почта</Text>
-            <TextInput
-                style={styles.input_email}
-                placeholder="Email"
-                value={email}
-                onChangeText={setEmail}
-            />
-            <Text style={styles.text_password}>Введите пароль</Text>
-            <TextInput
-                style={styles.input_password}
-                placeholder="Password"
-                secureTextEntry
-                value={password}
-                onChangeText={setPassword}
-            />
-            <Text style={styles.text_password_1}>Повторите введенный пароль</Text>
-            <TextInput
-                style={styles.input_password_1}
-                placeholder="Password"
-                secureTextEntry
-                value={password1}
-                onChangeText={setPassword1}
-            />
+            <Text style={styles.main_text}>Авторизація</Text>
 
-            <TouchableOpacity onPress={handleAuth}>
-                <View style={styles.button_Auth}>
-                    <Text style={styles.button_text}>Войти</Text>
-                </View>
+            <Text style={styles.text_email}>Електронна пошта</Text>
+            <TextInput style={styles.input_email} placeholder="Email" placeholderTextColor={isDarkTheme ? '#ccc' : '#666'} value={email} onChangeText={setEmail} keyboardType="email-address"/>
+            <Text style={styles.text_password}>Пароль</Text>
+            <TextInput style={styles.input_password} placeholder="Пароль" placeholderTextColor={isDarkTheme ? '#ccc' : '#666'} secureTextEntry value={password} onChangeText={setPassword}/>
+            <TouchableOpacity onPress={handleAuth} style={styles.button_Auth}>
+                <Text style={styles.button_text}>Увійти</Text>
             </TouchableOpacity>
-            <TouchableOpacity>
-                <Text style={styles.text_url_regist}>Создать аккаунт</Text>
+            <TouchableOpacity onPress={() => navigation.navigate('Registration')}>
+                <Text style={styles.text_url_regist}>Створити акаунт</Text>
             </TouchableOpacity>
         </View>
     );
 }
+
+
 
 const darkStyles=StyleSheet.create({
     button_Auth: {
@@ -112,17 +102,14 @@ const darkStyles=StyleSheet.create({
         color:'blue',
     },
     text_email: {
-        top:'33%',
+        top:'25%',
         left:'5%',
     },
     text_password:{
-        top:'36%',
+        top:'38%',
         left:'5%',
     },
-    text_password_1:{
-        top:'40%',
-        left:'5%',
-    },
+
 
 });
 

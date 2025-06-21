@@ -1,189 +1,301 @@
 import React, { useState, useEffect } from 'react';
-import {View, Text, TouchableOpacity, StyleSheet, TextInput, Image, Dimensions, Alert} from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
+import {View, Text, TouchableOpacity, StyleSheet, TextInput, KeyboardAvoidingView, Platform, ScrollView} from 'react-native';
 import * as Location from 'expo-location';
 import { useTheme } from '../../styles/Theme';
-import {Ionicons} from "@expo/vector-icons";
-
-
+import { Ionicons } from "@expo/vector-icons";
+import { useReports } from '../Report/ReportContext';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { Picker } from '@react-native-picker/picker';
 export default function Add_report({ navigation }) {
     const [description, setDescription] = useState('');
-    const [imageUri, setImageUri] = useState(null);
     const [location, setLocation] = useState(null);
-    const [date, setDate] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const [violationType, setViolationType] = useState('parking');
+    const [date, setDate] = useState(new Date());
+    const [showDatePicker, setShowDatePicker] = useState(false);
     const { isDarkTheme } = useTheme();
+    const { addReport } = useReports();
     const styles = isDarkTheme ? darkStyles : lightStyles;
 
     useEffect(() => {
-        const now = new Date();
-        setDate(now.toISOString());
+        getCurrentLocation();
+    }, []);
 
-        (async () => {
+    const getCurrentLocation = async () => {
+        try {
+            setIsLoading(true);
+
             let { status } = await Location.requestForegroundPermissionsAsync();
             if (status !== 'granted') {
                 Alert.alert('Помилка', 'Доступ до геолокації заборонено');
                 return;
             }
 
-            const loc = await Location.getCurrentPositionAsync({});
+            const loc = await Location.getCurrentPositionAsync({
+                accuracy: Location.Accuracy.Balanced
+            });
+
             setLocation(loc.coords);
-        })();
-    }, []);
+            Alert.alert('Геолокація отримана',
+                `Широта: ${loc.coords.latitude.toFixed(4)}, Довгота: ${loc.coords.longitude.toFixed(4)}`);
 
-    const takePhoto = async () => {
-        const permission = await ImagePicker.requestCameraPermissionsAsync();
-        if (permission.status !== 'granted') {
-            Alert.alert('Помилка', 'Потрібен дозвіл на камеру');
-            return;
+        } catch (error) {
+            Alert.alert('Помилка', 'Не вдалося отримати геолокацію');
+            console.error('Location error:', error);
+        } finally {
+            setIsLoading(false);
         }
+    };
 
-        const result = await ImagePicker.launchCameraAsync({
-            quality: 0.5,
-            base64: false,
-        });
-
-        if (!result.cancelled) {
-            setImageUri(result.uri);
+    const handleDateChange = (event, selectedDate) => {
+        setShowDatePicker(false);
+        if (selectedDate) {
+            setDate(selectedDate);
         }
+    };
+
+    const showDatepicker = () => {
+        setShowDatePicker(true);
     };
 
     const handleSave = async () => {
-        console.log('Поля перед перевіркою:', { description, imageUri, location });
-
-        if (!description.trim() || !imageUri || !location) {
-            Alert.alert('Помилка', 'Заповніть всі поля');
+        if (!description.trim()) {
+            Alert.alert('Помилка', 'Будь ласка, введіть опис порушення');
             return;
         }
 
-        const reportData = {
-            description,
-            imageUri,
-            date,
-            latitude: location.latitude,
-            longitude: location.longitude,
-        };
-
-        console.log('Збереження правопорушення:', reportData);
-
-
-    };
-    const getLocation = async () => {
-        let { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== 'granted') {
-            Alert.alert('Помилка', 'Доступ до геолокації заборонено');
+        if (!location) {
+            Alert.alert('Помилка', 'Будь ласка, отримайте геолокацію');
             return;
         }
 
-        const loc = await Location.getCurrentPositionAsync({});
-        setLocation(loc.coords);
-        Alert.alert('Геолокація отримана', `Широта: ${loc.coords.latitude}, Довгота: ${loc.coords.longitude}`);
-    };
+        try {
+            setIsLoading(true);
 
+            const reportData = {
+                id: Date.now().toString(),
+                description: description.trim(),
+                violationType,
+                date: date.toISOString(),
+                latitude: location.latitude,
+                longitude: location.longitude,
+            };
+
+            addReport(reportData);
+
+            Alert.alert('Успіх', 'Порушення успішно збережено');
+            navigation.goBack();
+
+        } catch (error) {
+            console.error('Save error:', error);
+            Alert.alert('Помилка', 'Не вдалося зберегти порушення');
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     return (
-        <View style={styles.container}>
+        <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            style={styles.container}
+        >
+            <ScrollView contentContainerStyle={styles.scrollContainer}>
+                <TouchableOpacity
+                    style={styles.backButton}
+                    onPress={() => navigation.goBack()}
+                    disabled={isLoading}
+                >
+                    <Ionicons
+                        name="arrow-back"
+                        size={24}
+                        color={styles.backButtonIconColor?.color || '#000'}
+                    />
+                    <Text style={styles.backButtonText}>Назад</Text>
+                </TouchableOpacity>
 
+                <Text style={styles.title}>Додати правопорушення</Text>
 
-            <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-                <Ionicons name="arrow-back" size={24} color={styles.backButtonIconColor?.color || '#000'} />
-                <Text style={styles.backButtonText}>Назад</Text>
-            </TouchableOpacity>
+                {/* Picker для типа нарушения */}
+                <View style={styles.pickerContainer}>
+                    <Text style={styles.label}>Тип порушення:</Text>
+                    <Picker
+                        selectedValue={violationType}
+                        style={styles.picker}
+                        onValueChange={(itemValue) => setViolationType(itemValue)}
+                        mode="dropdown"
+                    >
+                        <Picker.Item label="Неправильна парковка" value="parking" />
+                        <Picker.Item label="Перевищення швидкості" value="speeding" />
+                        <Picker.Item label="Проїзд на червоне" value="red_light" />
+                        <Picker.Item label="Інше порушення" value="other" />
+                    </Picker>
+                </View>
 
+                {/* Поле для выбора даты */}
+                <View style={styles.dateContainer}>
+                    <Text style={styles.label}>Дата порушення:</Text>
+                    <TouchableOpacity
+                        style={styles.dateButton}
+                        onPress={showDatepicker}
+                    >
+                        <Text style={styles.dateText}>
+                            {date.toLocaleDateString('uk-UA')}
+                        </Text>
+                    </TouchableOpacity>
+                </View>
 
+                {showDatePicker && (
+                    <DateTimePicker
+                        value={date}
+                        mode="date"
+                        display="default"
+                        onChange={handleDateChange}
+                    />
+                )}
 
+                <TextInput
+                    placeholder="Опис порушення"
+                    style={styles.input}
+                    placeholderTextColor={isDarkTheme ? '#ccc' : '#666'}
+                    value={description}
+                    onChangeText={setDescription}
+                    multiline
+                    numberOfLines={4}
+                    editable={!isLoading}
+                />
 
+                <TouchableOpacity
+                    style={[styles.button, isLoading && styles.disabledButton]}
+                    onPress={getCurrentLocation}
+                    disabled={isLoading}
+                >
+                    <Text style={styles.buttonText}>
+                        {isLoading ? 'Отримання локації...' : 'Отримати геолокацію'}
+                    </Text>
+                </TouchableOpacity>
 
+                {location && (
+                    <Text style={styles.locationText}>
+                        Геолокація: {location.latitude.toFixed(4)}, {location.longitude.toFixed(4)}
+                    </Text>
+                )}
 
-
-            <Text style={styles.title}>Додати правопорушення</Text>
-
-            <TouchableOpacity style={styles.button} onPress={takePhoto}>
-                <Text style={styles.buttonText}>📷 Зробити фото</Text>
-            </TouchableOpacity>
-
-            {imageUri && <Image source={{ uri: imageUri }} style={styles.image} />}
-
-            <TextInput
-                placeholder="Опис порушення"
-                style={styles.input}
-                placeholderTextColor={isDarkTheme ? '#ccc' : '#666'}
-                value={description}
-                onChangeText={setDescription}
-            />
-
-            <TouchableOpacity style={styles.button} onPress={getLocation}>
-                <Text style={styles.buttonText}>Отримати геолокацію</Text>
-            </TouchableOpacity>
-
-            {location && (
-                <Text style={{ color: isDarkTheme ? '#ccc' : '#333', marginTop: 8 }}>
-                     Геолокація: {location.latitude.toFixed(4)}, {location.longitude.toFixed(4)}
-                </Text>
-            )}
-
-            <TouchableOpacity style={styles.button} onPress={handleSave}>
-                <Text style={styles.buttonText}>💾 Зберегти</Text>
-            </TouchableOpacity>
-        </View>
-
+                <TouchableOpacity
+                    style={[styles.saveButton, isLoading && styles.disabledButton]}
+                    onPress={handleSave}
+                    disabled={isLoading}
+                >
+                    <Text style={styles.buttonText}>
+                        {isLoading ? 'Збереження...' : '💾 Зберегти'}
+                    </Text>
+                </TouchableOpacity>
+            </ScrollView>
+        </KeyboardAvoidingView>
     );
 }
 
-const screenWidth = Dimensions.get('window').width;
-
-const baseStyles = {
+const baseStyles = StyleSheet.create({
     container: {
         flex: 1,
+    },
+    scrollContainer: {
         padding: 20,
+        paddingBottom: 40,
     },
     title: {
-        fontSize: 20,
-        marginBottom: 12,
+        fontSize: 22,
+        marginBottom: 20,
         fontWeight: 'bold',
         textAlign: 'center',
     },
     button: {
         backgroundColor: '#4caf50',
-        padding: 12,
+        padding: 15,
         borderRadius: 10,
-        marginTop: 10,
+        marginTop: 15,
         alignItems: 'center',
-
+    },
+    saveButton: {
+        backgroundColor: '#2196F3',
+        padding: 15,
+        borderRadius: 10,
+        marginTop: 20,
+        alignItems: 'center',
+    },
+    disabledButton: {
+        opacity: 0.6,
     },
     buttonText: {
         color: '#fff',
         fontWeight: 'bold',
+        fontSize: 16,
     },
     input: {
         borderWidth: 1,
         borderColor: '#aaa',
         borderRadius: 8,
-        padding: 10,
-        marginTop: 12,
+        padding: 15,
+        marginTop: 15,
         fontSize: 16,
-    },
-    image: {
-        width: screenWidth - 40,
-        height: 200,
-        borderRadius: 8,
-        marginTop: 10,
+        minHeight: 120,
+        textAlignVertical: 'top',
     },
     backButton: {
         flexDirection: 'row',
         alignItems: 'center',
-        left:-20,
-        top:10,
-        width: '200%',
+        marginBottom: 20,
         paddingVertical: 8,
-        paddingHorizontal: 12,
         alignSelf: 'flex-start',
     },
-};
+    backButtonText: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        marginLeft: 8,
+    },
+    locationText: {
+        marginTop: 10,
+        fontSize: 14,
+        textAlign: 'center',
+    },
+    pickerContainer: {
+        marginTop: 15,
+        borderWidth: 1,
+        borderColor: '#aaa',
+        borderRadius: 8,
+        padding: 5,
+    },
+    picker: {
+        height: 50,
+        width: '100%',
+    },
+    label: {
+        fontSize: 16,
+        marginBottom: 5,
+        fontWeight: '500',
+    },
+    dateContainer: {
+        marginTop: 15,
+    },
+    dateButton: {
+        borderWidth: 1,
+        borderColor: '#aaa',
+        borderRadius: 8,
+        padding: 15,
+        alignItems: 'center',
+    },
+    dateText: {
+        fontSize: 16,
+    },
+});
 
 const darkStyles = StyleSheet.create({
     ...baseStyles,
     container: {
         ...baseStyles.container,
+        backgroundColor: '#121212',
+    },
+    scrollContainer: {
+        ...baseStyles.scrollContainer,
         backgroundColor: '#121212',
     },
     title: {
@@ -194,6 +306,7 @@ const darkStyles = StyleSheet.create({
         ...baseStyles.input,
         backgroundColor: '#1f1f1f',
         color: '#fff',
+        borderColor: '#444',
     },
     backButtonIconColor: {
         color: '#ffffff',
@@ -201,6 +314,28 @@ const darkStyles = StyleSheet.create({
     backButtonText: {
         ...baseStyles.backButtonText,
         color: '#ffffff',
+    },
+    locationText: {
+        ...baseStyles.locationText,
+        color: '#ccc',
+    },
+    pickerContainer: {
+        ...baseStyles.pickerContainer,
+        borderColor: '#444',
+        backgroundColor: '#1f1f1f',
+    },
+    label: {
+        ...baseStyles.label,
+        color: '#fff',
+    },
+    dateButton: {
+        ...baseStyles.dateButton,
+        borderColor: '#444',
+        backgroundColor: '#1f1f1f',
+    },
+    dateText: {
+        ...baseStyles.dateText,
+        color: '#fff',
     },
 });
 
@@ -210,6 +345,10 @@ const lightStyles = StyleSheet.create({
         ...baseStyles.container,
         backgroundColor: '#f9f9f9',
     },
+    scrollContainer: {
+        ...baseStyles.scrollContainer,
+        backgroundColor: '#f9f9f9',
+    },
     title: {
         ...baseStyles.title,
         color: '#000',
@@ -217,6 +356,18 @@ const lightStyles = StyleSheet.create({
     input: {
         ...baseStyles.input,
         backgroundColor: '#fff',
+        color: '#000',
+    },
+    backButtonText: {
+        ...baseStyles.backButtonText,
+        color: '#000',
+    },
+    locationText: {
+        ...baseStyles.locationText,
+        color: '#333',
+    },
+    label: {
+        ...baseStyles.label,
         color: '#000',
     },
 });
